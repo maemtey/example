@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Color Activity with Images</title>
+  <link rel="stylesheet" href="devmate.css">
+  <a href="learning1.html" class="back-button">⬅ Back to Learning Games</a>
+  <style>
+    body {
+      padding: 40px;
+      text-align: center;
+      color: #333;
+    }
+    h2 {
+      color: #00897b;
+      font-size: 2em;
+    }
+    .question {
+      display: none;
+      background: #ffffff;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      max-width: 600px;
+      margin: 20px auto;
+    }
+    .question.active {
+      display: block;
+    }
+    .color-box {
+      width: 70px;
+      height: 70px;
+      border-radius: 12px;
+      border: 3px solid #444;
+      cursor: pointer;
+      display: inline-block;
+      margin: 15px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .color-box:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .green { background-color: green; }
+    .black { background-color: black; }
+    .blue { background-color: blue; }
+    .purple { background-color: purple; }
+    .pink { background-color: hotpink; }
+    .orange { background-color: orange; }
+    .yellow { background-color: yellow; }
+    .red { background-color: red; }
+    .teal { background-color: teal; }
+    .brown { background-color: brown; }
+    .gray { background-color: gray; }
+
+    img {
+      display: block;
+      margin: 20px auto;
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      object-fit: cover;
+    }
+
+    .end {
+      font-size: 1.5em;
+      color: #00796b;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🎨 Color Activity</h2>
+  <p><strong>Instructions:</strong> Look at the picture and select the correct color.</p>
+
+  <!-- Question 1 -->
+  <div class="question active" id="q1">
+    
+    <p>🌱 What color is the grass?</p>
+    <img src="1.jpeg" alt="Grass Image">
+    <div class="color-box green" onclick="checkAnswer('green', 'q1', 'q2')"></div>
+    <div class="color-box black" onclick="checkAnswer('black', 'q1')"></div>
+    <div class="color-box blue" onclick="checkAnswer('blue', 'q1')"></div>
+  </div>
+
+  <!-- Question 2 -->
+  <div class="question" id="q2">
+    
+    <p>☁️ What color is the sky?</p>
+    <img src="2.jpeg" alt="Sky Image">
+    <div class="color-box purple" onclick="checkAnswer('purple', 'q2')"></div>
+    <div class="color-box blue" onclick="checkAnswer('blue', 'q2', 'q3')"></div>
+    <div class="color-box pink" onclick="checkAnswer('pink', 'q2')"></div>
+  </div>
+
+  <!-- Question 3 -->
+  <div class="question" id="q3">
+ 
+    <p>🐱 What color is the cat?</p>
+    <img src="memeng.jpeg" alt="Orange Cat">
+    <div class="color-box orange" onclick="checkAnswer('orange', 'q3', 'q4')"></div>
+    <div class="color-box yellow" onclick="checkAnswer('yellow', 'q3')"></div>
+    <div class="color-box pink" onclick="checkAnswer('pink', 'q3')"></div>
+  </div>
+
+  <!-- Question 4 -->
+  <div class="question" id="q4">
+    
+    <p>🥭 What color is the mango?</p>
+    <img src="mangga.jpeg" alt="Yellow Mango">
+    <div class="color-box black" onclick="checkAnswer('black', 'q4')"></div>
+    <div class="color-box red" onclick="checkAnswer('red', 'q4')"></div>
+    <div class="color-box yellow" onclick="checkAnswer('yellow', 'q4', 'q5')"></div>
+  </div>
+
+  <!-- Question 5 -->
+  <div class="question" id="q5">
+   
+    <p>👕 What color is the shirt?</p>
+    <img src="wow nina.jpeg" alt="Black Shirt">
+    <div class="color-box teal" onclick="checkAnswer('teal', 'q5')"></div>
+    <div class="color-box brown" onclick="checkAnswer('brown', 'q5')"></div>
+    <div class="color-box gray" onclick="checkAnswer('gray', 'q5')"></div>
+    <div class="color-box black" onclick="checkAnswer('black', 'q5', 'end')"></div>
+  </div>
+
+  <!-- End -->
+  <div class="question" id="end">
+    <h3 class="end">🎉 Congratulations!</h3>
+    <p>You finished all the color questions! Great job!</p>
+  </div>
+
+  <script>
+    const answers = {
+      q1: "green",
+      q2: "blue",
+      q3: "orange",
+      q4: "yellow",
+      q5: "black"
+    };
+
+    function checkAnswer(selected, current, next = null) {
+      if (selected === answers[current]) {
+        document.getElementById(current).classList.remove("active");
+        if (next) {
+          document.getElementById(next).classList.add("active");
+        }
+      } else {
+        alert("❌ Try again!");
+      }
+    }
+    
+  </script>
+
+</body>
+</html>

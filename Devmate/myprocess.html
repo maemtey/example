@@ -1,0 +1,34 @@
+<html>
+<head>
+  <title>My Process</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="devmate.css">
+</head>
+<body>
+  <a href="dashboard.html" style="display: inline-block; margin: 10px 0; font-size: 18px; text-decoration: none; background-color: #ffcc00; padding: 10px 20px; border-radius: 10px; color: black; font-weight: bold;">⬅ Back to Dashboard</a>
+
+  <h1>Progress Chart</h1>
+  <canvas id="progressChart" width="400" height="200"></canvas>
+
+  <script>
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    const chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [localStorage.getItem('username') || 'Guest'],
+        datasets: [{
+          label: 'Activities Completed',
+          data: [5],
+          backgroundColor: ['#f1c40f'],
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

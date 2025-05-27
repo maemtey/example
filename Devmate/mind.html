@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shape Tracing Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(to bottom right, #7b2ff7, #f107a3);
+      color: white;
+    }
+
+    h1 {
+      margin-top: 20px;
+    }
+
+    canvas {
+      background: white;
+      border: 3px solid #6a1b9a;
+      border-radius: 10px;
+      margin-top: 20px;
+      touch-action: none;
+    }
+
+    #feedback {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+   <a href="dashboard.html" style="display: inline-block; margin: 10px 0; font-size: 18px; text-decoration: none; background-color: #ffcc00; padding: 10px 20px; border-radius: 10px; color: black; font-weight: bold;">⬅ Back to Dashboard</a>
+  <h1>Trace the Shape!</h1>
+  <canvas id="shapeCanvas" width="350" height="350"></canvas>
+  <div id="feedback">Start tracing the shape!</div>
+
+  <script>
+    const shapes = ['star', 'triangle', 'square', 'diamond', 'rectangle'];
+    const shapesData = {
+      'star': [
+        [175, 40], [200, 120], [275, 120], [215, 170], [230, 260],
+        [175, 210], [120, 260], [135, 170], [75, 120], [150, 120]
+      ],
+      'triangle': [
+        [175, 50], [275, 250], [75, 250], [175, 50]
+      ],
+      'square': [
+        [75, 75], [275, 75], [275, 275], [75, 275], [75, 75]
+      ],
+      'diamond': [
+        [175, 50], [275, 175], [175, 300], [75, 175], [175, 50]
+      ],
+      'rectangle': [
+        [75, 100], [275, 100], [275, 200], [75, 200], [75, 100]
+      ]
+    };
+
+    const canvas = document.getElementById('shapeCanvas');
+    const ctx = canvas.getContext('2d');
+    let currentShapeIndex = 0;
+    let currentShape = shapes[currentShapeIndex];
+    let tracePoints = [];
+    let drawing = false;
+
+    function drawShape(shape) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.beginPath();
+      const coords = shapesData[shape];
+      ctx.moveTo(coords[0][0], coords[0][1]);
+      for (let i = 1; i < coords.length; i++) {
+        ctx.lineTo(coords[i][0], coords[i][1]);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function getTouchPos(event) {
+      const rect = canvas.getBoundingClientRect();
+      let x, y;
+      if (event.touches && event.touches.length > 0) {
+        x = event.touches[0].clientX - rect.left;
+        y = event.touches[0].clientY - rect.top;
+      } else {
+        x = event.clientX - rect.left;
+        y = event.clientY - rect.top;
+      }
+      return { x, y };
+    }
+
+    function startDraw(event) {
+      event.preventDefault();
+      drawing = true;
+      tracePoints = [];
+      const pos = getTouchPos(event);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+    }
+
+    function drawTrace(event) {
+      if (!drawing) return;
+      event.preventDefault();
+      const pos = getTouchPos(event);
+      tracePoints.push([pos.x, pos.y]);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.strokeStyle = 'red';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    function stopDraw() {
+      if (!drawing) return;
+      drawing = false;
+      checkTrace();
+    }
+
+    function checkTrace() {
+      const coords = shapesData[currentShape];
+      const tolerance = 20;
+      let isCorrect = true;
+
+      for (let i = 0; i < coords.length; i++) {
+        const [shapeX, shapeY] = coords[i];
+        const closestPoint = tracePoints.reduce((closest, point) => {
+          const dx = point[0] - shapeX;
+          const dy = point[1] - shapeY;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          return dist < closest.dist ? { dist, point } : closest;
+        }, { dist: Infinity, point: null });
+
+        if (closestPoint.dist > tolerance) {
+          isCorrect = false;
+          break;
+        }
+      }
+
+      const feedback = document.getElementById('feedback');
+      if (isCorrect) {
+        feedback.innerText = "✅ Good job! Moving to the next shape...";
+        setTimeout(nextShape, 1500);
+      } else {
+        feedback.innerText = "❌ Try again! Follow the shape closely.";
+        resetTraceOnly();
+      }
+    }
+
+    function nextShape() {
+      const feedback = document.getElementById('feedback');
+      if (currentShapeIndex < shapes.length - 1) {
+        currentShapeIndex++;
+        currentShape = shapes[currentShapeIndex];
+        tracePoints = [];
+        drawShape(currentShape);
+        feedback.innerText = "Trace the shape!";
+      } else {
+        feedback.innerText = "🎉 All shapes completed!";
+        removeAllEventListeners();
+      }
+    }
+
+    function resetTraceOnly() {
+      drawShape(currentShape);
+      tracePoints = [];
+    }
+
+    function removeAllEventListeners() {
+      canvas.removeEventListener('mousedown', startDraw);
+      canvas.removeEventListener('mousemove', drawTrace);
+      canvas.removeEventListener('mouseup', stopDraw);
+      canvas.removeEventListener('mouseout', stopDraw);
+      canvas.removeEventListener('touchstart', startDraw);
+      canvas.removeEventListener('touchmove', drawTrace);
+      canvas.removeEventListener('touchend', stopDraw);
+    }
+
+    // Mouse events
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', drawTrace);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseout', stopDraw);
+
+    // Touch events
+    canvas.addEventListener('touchstart', startDraw);
+    canvas.addEventListener('touchmove', drawTrace);
+    canvas.addEventListener('touchend', stopDraw);
+
+    drawShape(currentShape);
+  </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevMate Sign Up</title>
+  <link rel="stylesheet" href="devmate.css">
+</head>
+<body class="login-page">
+  <div class="bg-image">
+    <img src="Devmate.jpeg" alt="DevMate Logo" class="logo" />
+    <div class="login-box">
+      <h2>Create Your DevMate Account</h2>
+      <input type="text" id="newUsername" placeholder="Enter a username" required />
+      <button onclick="signup()">Sign Up</button>
+      <p>Already have an account? <a href="home.html">Login</a></p>
+    </div>
+  </div>
+  <script>
+    function signup() {
+      const newUsername = document.getElementById('newUsername').value.trim();
+      if (newUsername !== '') {
+        localStorage.setItem('username', newUsername);
+        alert('Account created successfully!');
+        window.location.href = 'dashboard.html';
+      } else {
+        alert('Please enter a username');
+      }
+    }
+  </script>
+</body>
+</html>

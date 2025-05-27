@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevMate Login</title>
+  <link rel="stylesheet" href="devmate.css" />
+</head>
+<body class="login-page">
+  <div class="bg-image">
+    <img src="Devmate.jpeg" alt="DevMate Logo" class="logo" />
+    <div class="login-box">
+      <h2>Welcome to DevMate</h2>
+      <input type="text" id="username" placeholder="Enter your username" required />
+      <button onclick="login()">Login</button>
+    </div>
+  </div>
+  <script>
+    function login() {
+      const username = document.getElementById('username').value;
+      if (username.trim() !== '') {
+        localStorage.setItem('username', username);
+        window.location.href = 'dashboard.html';
+      } else {
+        alert('Please enter your username');
+      }
+    }
+  </script>
+</body>
+</html>

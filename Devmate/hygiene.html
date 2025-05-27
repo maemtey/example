@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="devmate.css">
+  <title>Hygiene or Not?</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    header {
+      background-color: #00acc1;
+      color: white;
+      padding: 20px;
+      font-size: 28px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .instructions {
+      background: #fff3cd;
+      padding: 15px;
+      margin: 20px auto;
+      max-width: 600px;
+      border-radius: 10px;
+      border: 2px solid #ffeeba;
+    }
+
+    .card-container {
+      margin: 30px auto;
+      max-width: 300px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      padding: 20px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card-container.active {
+      display: flex;
+    }
+
+    .card-container img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .buttons {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+    }
+
+    .btn {
+      font-size: 24px;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.1);
+    }
+
+    .btn.correct {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .btn.wrong {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .notification {
+      position: fixed;
+      top: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4caf50;
+      color: white;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-size: 18px;
+      transition: top 0.4s ease;
+      z-index: 999;
+    }
+
+    .notification.error {
+      background: #e53935;
+    }
+
+    .notification.show {
+      top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>🧼 Hygiene or Not? 🚿</header>
+  
+
+  <div class="instructions">
+    Look at each picture. If it shows good hygiene, click ✅. If it doesn't, click ❌.
+  </div>
+
+  <div class="notification" id="notificationBar"></div>
+
+  <!-- Card 1 -->
+  <div class="card-container active" data-correct="true">
+    <img src="nail.jpeg" alt="Nail Clipping">
+    <div class="buttons">
+      <button class="btn correct" onclick="checkAnswer(true)">✅</button>
+      <button class="btn wrong" onclick="checkAnswer(false)">❌</button>
+    </div>
+  </div>
+
+  <!-- Card 2 -->
+  <div class="card-container" data-correct="false">
+    <img src="ice.jpeg" alt="Eating Ice Cream">
+    <div class="buttons">
+      <button class="btn correct" onclick="checkAnswer(true)">✅</button>
+      <button class="btn wrong" onclick="checkAnswer(false)">❌</button>
+    </div>
+  </div>
+
+  <!-- Card 3 -->
+  <div class="card-container" data-correct="true">
+    <img src="wash.jpeg" alt="Hand Washing">
+    <div class="buttons">
+      <button class="btn correct" onclick="checkAnswer(true)">✅</button>
+      <button class="btn wrong" onclick="checkAnswer(false)">❌</button>
+    </div>
+  </div>
+
+  <!-- Card 4 -->
+  <div class="card-container" data-correct="true">
+    <img src="brush.jpeg" alt="Brushing Teeth">
+    <div class="buttons">
+      <button class="btn correct" onclick="checkAnswer(true)">✅</button>
+      <button class="btn wrong" onclick="checkAnswer(false)">❌</button>
+    </div>
+  </div>
+
+  <!-- Card 5 -->
+  <div class="card-container" data-correct="false">
+    <img src="playing.jpeg" alt="Playing in Mud">
+    <div class="buttons">
+      <button class="btn correct" onclick="checkAnswer(true)">✅</button>
+      <button class="btn wrong" onclick="checkAnswer(false)">❌</button>
+    </div>
+  </div>
+   <a href="learning2.html" style="display: inline-block; margin: 10px; font-size: 18px; text-decoration: none; background-color: #ffcc00; padding: 10px 20px; border-radius: 10px; color: black; font-weight: bold;">⬅ Back</a>
+
+  <script>
+    let current = 0;
+    const cards = document.querySelectorAll(".card-container");
+
+    function showCard(index) {
+      cards.forEach((card, i) => {
+        card.classList.toggle("active", i === index);
+      });
+    }
+
+    function showNotification(message, isError = false) {
+      const bar = document.getElementById("notificationBar");
+      bar.textContent = message;
+      bar.className = "notification show" + (isError ? " error" : "");
+      setTimeout(() => {
+        bar.classList.remove("show");
+      }, 1500);
+    }
+
+    function checkAnswer(userAnswer) {
+      const actual = cards[current].dataset.correct === "true";
+      if (userAnswer === actual) {
+        showNotification("✅ Correct!");
+        setTimeout(() => {
+          current++;
+          if (current < cards.length) {
+            showCard(current);
+          } else {
+            showNotification("🎉 All done!", false);
+          }
+        }, 1500);
+      } else {
+        showNotification("❌ Try again.", true);
+      }
+    }
+  </script>
+</body>
+</html>

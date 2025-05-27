@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <title>DevMate Dashboard</title>
+  <link rel="stylesheet" href="devmate.css" />
+</head>
+<body>
+  <div class="dashboard">
+   <a href="home.html" style="display: inline-block; margin: 10px; font-size: 18px; text-decoration: none; background-color:  #ffcc00; padding: 10px 20px; border-radius: 10px; color: black; font-weight: bold;">⬅ Back to log in</a>
+    <h1>Hello, <span id="userDisplay"></span>!</h1>
+    <div class="options image-cards">
+      <a href="myprocess.html"><img src="myprogress.jpeg" alt="My Process"></a>
+      <a href="learning.html"><img src="learninggames.jpeg" alt="Learning Games"></a>
+      <a href="rewards.html"><img src="myrewards.jpeg" alt="Rewards"></a>
+      <a href="routine.html"><img src="myroutine.jpeg" alt="Routine"></a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('userDisplay').textContent = localStorage.getItem('username') || 'Guest';
+  </script>
+</body>
+</html>
