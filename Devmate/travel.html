@@ -9,6 +9,7 @@
     body {
       margin: 0;
       padding: 0;
+      font-family: sans-serif;
     }
 
     .notification {
@@ -39,7 +40,7 @@
       background: #eef;
       padding: 20px;
       margin: 20px auto;
-      width: 80%;
+      width: 90%;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(123, 123, 255, 0.2);
       font-size: 18px;
@@ -62,6 +63,7 @@
       box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);
       cursor: grab;
       transition: transform 0.3s, box-shadow 0.3s;
+      touch-action: none;
     }
 
     .item:hover {
@@ -71,25 +73,23 @@
 
     .baskets {
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      gap: 80px;
-      margin-top: 40px;
+      gap: 40px;
+      margin: 40px 0;
       padding-bottom: 40px;
     }
 
     .basket {
-      width: 150px;
-      height: 150px;
+      width: 140px;
+      height: 140px;
       border: 3px dashed #aaa;
       border-radius: 16px;
       padding: 8px;
       transition: all 0.3s ease;
       background-color: #fff;
       position: relative;
-    }
-
-    .basket:hover {
-      box-shadow: 0 0 15px rgba(0, 128, 0, 0.3);
+      touch-action: none;
     }
 
     .basket img {
@@ -97,12 +97,30 @@
       height: 100%;
       object-fit: contain;
       border-radius: 10px;
+      pointer-events: none;
     }
 
     .highlight {
       border-color: #28a745;
       background-color: #d4edda;
       box-shadow: 0 0 15px rgba(40, 167, 69, 0.4);
+    }
+
+    @media (max-width: 500px) {
+      .instructions {
+        font-size: 16px;
+        padding: 15px;
+      }
+
+      .item {
+        width: 70px;
+        height: 70px;
+      }
+
+      .basket {
+        width: 120px;
+        height: 120px;
+      }
     }
   </style>
 </head>
@@ -112,181 +130,104 @@
 
   <div class="instructions">
     <strong>Instructions:</strong><br>
-    Look at the pictures of the fruits and vegetables.<br>
-    Place the fruits inside the <span style="color:blue">blue basket</span> and the vegetables inside the <span style="color:red">red basket</span>.<br>
-    Take your time and ask for help if you need it!
+    Place the fruits inside the <span style="color:blue">blue basket</span> and the vegetables inside the <span style="color:red">red basket</span>.
   </div>
 
   <div id="items">
-    <img src="straw.jpeg" class="item" draggable="true" id="strawberry" data-type="fruit">
-    <img src="orange.jpeg" class="item" draggable="true" id="orange" data-type="fruit">
-    <img src="grapes.jpeg" class="item" draggable="true" id="grapes" data-type="fruit">
-    <img src="carrots.jpeg" class="item" draggable="true" id="carrots" data-type="vegetable">
-    <img src="oker.jpeg" class="item" draggable="true" id="oker" data-type="vegetable">
-    <img src="bok choy.jpeg" class="item" draggable="true" id="bokchoy" data-type="vegetable">
-    <img src="squash.jpeg" class="item" draggable="true" id="squash" data-type="vegetable">
-    <img src="cabbage.jpeg" class="item" draggable="true" id="cabbage" data-type="vegetable">
-    <img src="melon.jpeg" class="item" draggable="true" id="watermelon" data-type="fruit">
-    <img src="red1.jpeg" class="item" draggable="true" id="apple" data-type="fruit">
+    <img src="straw.jpeg" class="item" id="strawberry" data-type="fruit">
+    <img src="orange.jpeg" class="item" id="orange" data-type="fruit">
+    <img src="grapes.jpeg" class="item" id="grapes" data-type="fruit">
+    <img src="carrots.jpeg" class="item" id="carrots" data-type="vegetable">
+    <img src="oker.jpeg" class="item" id="oker" data-type="vegetable">
+    <img src="bok choy.jpeg" class="item" id="bokchoy" data-type="vegetable">
+    <img src="squash.jpeg" class="item" id="squash" data-type="vegetable">
+    <img src="cabbage.jpeg" class="item" id="cabbage" data-type="vegetable">
+    <img src="melon.jpeg" class="item" id="watermelon" data-type="fruit">
+    <img src="red1.jpeg" class="item" id="apple" data-type="fruit">
   </div>
 
   <div class="baskets">
-    <div id="fruitBasket" class="basket" ondragover="allowDrop(event)" ondragleave="removeHighlight(event)" ondrop="drop(event, 'fruit')">
+    <div id="fruitBasket" class="basket" data-accept="fruit">
       <img src="blue basket.jpeg" alt="Blue Basket">
     </div>
-    <div id="vegetableBasket" class="basket" ondragover="allowDrop(event)" ondragleave="removeHighlight(event)" ondrop="drop(event, 'vegetable')">
+    <div id="vegetableBasket" class="basket" data-accept="vegetable">
       <img src="red basket.jpeg" alt="Red Basket">
     </div>
   </div>
 
- <!-- Keep everything the same in <head> and <style> -->
+  <script>
+    let draggedItem = null;
 
-<script>
-  let correctCount = 0;
-  const totalCorrectItems = 3;
+    const items = document.querySelectorAll('.item');
+    const baskets = document.querySelectorAll('.basket');
 
-  function allowDrop(ev) {
-    ev.preventDefault();
-  }
+    items.forEach(item => {
+      item.setAttribute("draggable", "true");
 
-  function dropItem(ev) {
-    ev.preventDefault();
-    const itemId = ev.dataTransfer.getData("text");
-    const item = document.getElementById(itemId);
+      item.addEventListener('dragstart', e => {
+        draggedItem = item;
+        e.dataTransfer.setData("text/plain", item.id);
+      });
 
-    if (!item || item.classList.contains("dropped")) return;
-
-    if (isItemCorrect(item)) {
-      placeItemInBag(item);
-      correctCount++;
-      if (correctCount === totalCorrectItems) showSuccessMessage();
-    } else {
-      alert("❌ That doesn't belong in a school bag!");
-    }
-  }
-
-  function isItemCorrect(item) {
-    return item.dataset.correct === "true";
-  }
-
-  function placeItemInBag(item) {
-    const bag = document.getElementById("bag");
-    item.classList.add("dropped");
-    item.style.display = "block";
-    item.style.position = "absolute";
-    item.style.width = "50px";
-    item.style.height = "50px";
-    item.style.top = `${Math.random() * 140}px`;
-    item.style.left = `${Math.random() * 140}px`;
-    item.style.zIndex = "1";
-    bag.appendChild(item);
-  }
-
-  function showSuccessMessage() {
-    document.getElementById("successMessage").style.display = "block";
-  }
-
-  // Desktop drag events
-  document.querySelectorAll('.item').forEach(item => {
-    item.addEventListener("dragstart", ev => {
-      ev.dataTransfer.setData("text", item.id);
+      // Touch support
+      item.addEventListener('touchstart', e => {
+        draggedItem = item;
+      });
     });
 
-    // Mobile touch events
-    item.addEventListener("touchstart", handleTouchStart, { passive: false });
-    item.addEventListener("touchend", handleTouchEnd);
-  });
+    baskets.forEach(basket => {
+      basket.addEventListener('dragover', e => {
+        e.preventDefault();
+        basket.classList.add('highlight');
+      });
 
-  let touchedItem = null;
+      basket.addEventListener('dragleave', () => {
+        basket.classList.remove('highlight');
+      });
 
-  function handleTouchStart(ev) {
-    ev.preventDefault(); // Prevent scrolling
-    touchedItem = ev.currentTarget;
-  }
+      basket.addEventListener('drop', e => {
+        e.preventDefault();
+        checkDrop(basket);
+      });
 
-  function handleTouchEnd(ev) {
-    const touch = ev.changedTouches[0];
-    const bag = document.getElementById("bag");
-    const bagRect = bag.getBoundingClientRect();
-
-    if (
-      touch.clientX >= bagRect.left &&
-      touch.clientX <= bagRect.right &&
-      touch.clientY >= bagRect.top &&
-      touch.clientY <= bagRect.bottom
-    ) {
-      // Simulate drop
-      if (touchedItem && !touchedItem.classList.contains("dropped")) {
-        if (isItemCorrect(touchedItem)) {
-          placeItemInBag(touchedItem);
-          correctCount++;
-          if (correctCount === totalCorrectItems) showSuccessMessage();
-        } else {
-          alert("❌ That doesn't belong in a school bag!");
+      // Touch support
+      basket.addEventListener('touchend', e => {
+        if (draggedItem) {
+          const rect = basket.getBoundingClientRect();
+          const touch = e.changedTouches[0];
+          if (
+            touch.clientX >= rect.left &&
+            touch.clientX <= rect.right &&
+            touch.clientY >= rect.top &&
+            touch.clientY <= rect.bottom
+          ) {
+            checkDrop(basket);
+          }
         }
+      });
+    });
+
+    function checkDrop(basket) {
+      const itemType = draggedItem.dataset.type;
+      const acceptedType = basket.dataset.accept;
+      if (itemType === acceptedType) {
+        draggedItem.remove();
+        showNotification("✅ Great job! You sorted it correctly.");
+      } else {
+        showNotification("❌ Oops! That doesn't belong in this basket.", true);
       }
+      basket.classList.remove('highlight');
+      draggedItem = null;
     }
-    touchedItem = null;
-  }
 
-  // Bag drop area
-  const bag = document.getElementById("bag");
-  bag.addEventListener("drop", dropItem);
-  bag.addEventListener("dragover", allowDrop);
-
-  let touchItem = null;
-
-  // Handle touch start
-  document.querySelectorAll('.item').forEach(item => {
-    item.addEventListener('touchstart', function (e) {
-      touchItem = e.target;
-    }, false);
-  });
-
-  // Handle touch move (to prevent scrolling while dragging)
-  document.addEventListener('touchmove', function (e) {
-    if (touchItem) e.preventDefault();
-  }, { passive: false });
-
-  // Handle touch end to simulate drop
-  document.querySelectorAll('.basket, #bag').forEach(target => {
-    target.addEventListener('touchend', function (e) {
-      if (!touchItem) return;
-
-      const touch = e.changedTouches[0];
-      const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
-
-      if (target.contains(dropTarget)) {
-        if (target.id === 'bag') {
-          // For School Bag Game
-          if (touchItem.dataset.correct === "true") {
-            if (!touchItem.classList.contains("dropped")) {
-              placeItemInBag(touchItem);
-              correctCount++;
-              if (correctCount === totalCorrectItems) {
-                showSuccessMessage();
-              }
-            }
-          } else {
-            alert("❌ That doesn't belong in a school bag!");
-          }
-        } else {
-          // For Fruit and Vegetable Game
-          const acceptedType = target.id.includes("fruit") ? "fruit" : "vegetable";
-          if (touchItem.dataset.type === acceptedType) {
-            touchItem.remove();
-            showNotification("✅ Great job! You sorted it correctly.");
-          } else {
-            showNotification("❌ Oops! That doesn't belong in this basket.", true);
-          }
-        }
-      }
-
-      touchItem = null;
-    }, false);
-  });
-
-</script>
-
+    function showNotification(message, isError = false) {
+      const bar = document.getElementById('notificationBar');
+      bar.textContent = message;
+      bar.className = 'notification show' + (isError ? ' error' : '');
+      setTimeout(() => {
+        bar.classList.remove('show');
+      }, 2000);
+    }
+  </script>
 </body>
 </html>
